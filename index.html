@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lời chúc của Tiny - 20/10</title>
+<style>
+  :root { --pink:#ff8fb1; --pink2:#ffd6e4; --green:#4caf7a; --ink:#5a3a48; --bg:#fff0f5; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif; color:var(--ink);
+    background: radial-gradient(circle at 20% 10%, #ffe3ee, transparent 50%),
+                radial-gradient(circle at 80% 90%, #ffeaf2, transparent 50%), var(--bg);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  canvas#petals { position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .card {
+    position:relative; z-index:1; width:min(92vw,420px); padding:28px 22px;
+    background:rgba(255,255,255,.85); border-radius:28px;
+    box-shadow:0 12px 40px rgba(255,143,177,.35); text-align:center;
+  }
+  .avatar { font-size:64px; animation:bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform:translateY(-8px); } }
+  h1 { font-size:20px; margin:6px 0 14px; color:#d6457a; }
+  #dialog { min-height:96px; font-size:17px; line-height:1.55; }
+  .btn {
+    margin-top:16px; border:0; border-radius:999px; padding:12px 26px; font-size:16px;
+    background:linear-gradient(135deg,var(--pink),#ff6f9c); color:#fff; cursor:pointer;
+    box-shadow:0 6px 16px rgba(255,111,156,.4); transition:transform .15s;
+  }
+  .btn:active { transform:scale(.95); }
+  .btn.green { background:linear-gradient(135deg,#7fd6a0,var(--green)); box-shadow:0 6px 16px rgba(76,175,122,.4); }
+  .hidden { display:none; }
+  #clover { font-size:72px; cursor:pointer; display:inline-block; animation:spin 4s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .bar { height:12px; background:var(--pink2); border-radius:99px; overflow:hidden; margin:14px 0 6px; }
+  .bar > i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--pink),#ff6f9c); transition:width .4s; }
+  small { opacity:.75; }
+  .heart { position:fixed; z-index:2; pointer-events:none; animation:up 1.6s ease-out forwards; font-size:22px; }
+  @keyframes up { to { transform:translateY(-160px); opacity:0; } }
+</style>
+</head>
+<body>
+<canvas id="petals"></canvas>
+
+<main class="card">
+  <div class="avatar">🌸</div>
+  <h1>Sự thức giấc của Tiny ✿ 20/10</h1>
+
+  <div id="dialog"></div>
+
+  <button id="next" class="btn">Tiếp tục ♡</button>
+
+  <div id="giftBox" class="hidden">
+    <div id="clover" title="Bấm vào nhé">🍀</div>
+    <p>Bấm vào cỏ 4 lá để nhận may mắn!</p>
+  </div>
+
+  <div id="shareBox" class="hidden">
+    <p>Giúp tớ chia sẻ trang này tới mọi người được không? 🥺</p>
+    <div class="bar"><i id="fill"></i></div>
+    <small id="pct">0%</small><br>
+    <button id="share" class="btn green">Đồng ý</button>
+  </div>
+</main>
+
+<script>
+// ----- Đoạn hội thoại (sửa tên/lời chúc tại đây) -----
+const lines = [
+  "Đợi chút xíu đii... Này cậu gì ơi, tớ là Thành! 🌷",
+  "Sắp 20/10 rồi nên tớ muốn chúc cậu thật nhiều sức khỏe,",
+  "thật xinh đẹp và luôn giữ nụ cười trên môi nha 💖",
+  "Tớ tặng cậu ngọn cỏ 4 lá này nè, cầm lấy đi!"
+];
+let i = 0, typing = false;
+const dialog = document.getElementById('dialog');
+const nextBtn = document.getElementById('next');
+
+function type(text, done) {
+  typing = true; dialog.textContent = ""; let k = 0;
+  const t = setInterval(() => {
+    dialog.textContent += text[k++];
+    if (k >= text.length) { clearInterval(t); typing = false; done && done(); }
+  }, 35);
+}
+function show() {
+  if (i < lines.length) type(lines[i++]);
+  else {
+    nextBtn.classList.add('hidden');
+    dialog.textContent = "Chúc cậu gặp thật nhiều điều may mắn! ✨";
+    document.getElementById('giftBox').classList.remove('hidden');
+  }
+}
+nextBtn.onclick = () => { if (!typing) show(); };
+show();
+
+// ----- Cỏ 4 lá -> thanh tiến trình -----
+let pct = 0;
+document.getElementById('clover').onclick = () => {
+  document.getElementById('shareBox').classList.remove('hidden');
+  pct = Math.min(100, pct + 20);
+  document.getElementById('fill').style.width = pct + '%';
+  document.getElementById('pct').textContent = pct + '%';
+  burst();
+};
+
+// ----- Chia sẻ -----
+document.getElementById('share').onclick = async () => {
+  const data = { title: "Lời chúc 20/10 từ Tiny", text: "Có một lời chúc dành cho cậu nè 🌸", url: location.href };
+  try {
+    if (navigator.share) await navigator.share(data);
+    else { await navigator.clipboard.writeText(location.href); alert("Đã sao chép link, cậu gửi cho mọi người nhé! 💕"); }
+  } catch (e) {}
+  burst();
+};
+
+// ----- Hiệu ứng tim -----
+function burst() {
+  for (let n = 0; n < 8; n++) {
+    const h = document.createElement('div');
+    h.className = 'heart'; h.textContent = ['💗','💖','🌸','✨'][n % 4];
+    h.style.left = (30 + Math.random() * 40) + 'vw';
+    h.style.top = (50 + Math.random() * 20) + 'vh';
+    document.body.appendChild(h); setTimeout(() => h.remove(), 1600);
+  }
+}
+
+// ----- Cánh hoa rơi -----
+const cv = document.getElementById('petals'), cx = cv.getContext('2d');
+function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+const petals = Array.from({ length: 40 }, () => ({
+  x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+  r: 4 + Math.random() * 6, s: .5 + Math.random() * 1.2, d: Math.random() * Math.PI * 2
+}));
+(function loop() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  for (const p of petals) {
+    p.y += p.s; p.d += .02; p.x += Math.sin(p.d) * .8;
+    if (p.y > cv.height + 10) { p.y = -10; p.x = Math.random() * cv.width; }
+    cx.fillStyle = 'rgba(255,143,177,.7)';
+    cx.beginPath(); cx.ellipse(p.x, p.y, p.r, p.r * .6, p.d, 0, Math.PI * 2); cx.fill();
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
