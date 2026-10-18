@@ -37,16 +37,21 @@
   .bar { height:12px; background:var(--pink2); border-radius:99px; overflow:hidden; margin:14px 0 6px; }
   .bar > i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--pink),#ff6f9c); transition:width .4s; }
   small { opacity:.75; }
+  .music { position:fixed; top:14px; right:14px; z-index:3; width:44px; height:44px; border:0; border-radius:50%;
+    background:rgba(255,255,255,.9); font-size:22px; cursor:pointer; box-shadow:0 4px 14px rgba(255,143,177,.4); }
+  .music.off { opacity:.5; filter:grayscale(1); }
   .heart { position:fixed; z-index:2; pointer-events:none; animation:up 1.6s ease-out forwards; font-size:22px; }
   @keyframes up { to { transform:translateY(-160px); opacity:0; } }
 </style>
 </head>
 <body>
 <canvas id="petals"></canvas>
+<audio id="bgm" src="nhac.mp3" loop preload="auto"></audio>
+<button id="music" class="music" title="Bật/tắt nhạc">🎵</button>
 
 <main class="card">
   <div class="avatar">🌸</div>
-  <h1>Sự thức giấc của ngày quốc tế phụ nữ 🌸 20/10</h1>
+  <h1>Sự thức giấc của ngày quốc tế phụ nữ 20/10</h1>
 
   <div id="dialog"></div>
 
@@ -92,8 +97,19 @@ function show() {
     document.getElementById('giftBox').classList.remove('hidden');
   }
 }
-nextBtn.onclick = () => { if (!typing) show(); };
+nextBtn.onclick = () => { startMusic(); if (!typing) show(); };
 show();
+
+// ----- Nhạc nền (đặt file nhac.mp3 cùng thư mục với index.html) -----
+const bgm = document.getElementById('bgm'), musicBtn = document.getElementById('music');
+let wantMusic = true;
+function startMusic() { if (wantMusic && bgm.paused) bgm.play().catch(() => {}); }
+musicBtn.onclick = () => {
+  wantMusic = bgm.paused;
+  if (wantMusic) bgm.play().catch(() => {}); else bgm.pause();
+  musicBtn.classList.toggle('off', !wantMusic);
+};
+document.addEventListener('click', startMusic, { once: true });
 
 // ----- Cỏ 4 lá -> thanh tiến trình -----
 let pct = 0;
